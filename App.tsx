@@ -189,7 +189,7 @@ const App: React.FC = () => {
               <a className="hover:text-primary transition-colors" href="#">쿠키 정책</a>
             </div>
             <div className="text-[#617589] dark:text-gray-400 text-sm">
-              © {currentYear} 손재영. All rights reserved.
+              © {currentYear} <a href="https://github.com/jy-SSon/-" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors font-medium">손재영</a>. All rights reserved.
             </div>
           </div>
         </div>
