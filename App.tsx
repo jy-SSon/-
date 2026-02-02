@@ -1,10 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { INITIAL_DATA } from './constants';
 import { LandingPageData } from './types';
 
-const Navbar: React.FC = () => (
-  <header className="sticky top-0 z-50 w-full border-b border-solid border-[#f0f2f4] dark:border-gray-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md">
+const Navbar: React.FC<{ onOpenQuote: () => void }> = ({ onOpenQuote }) => (
+  <header className="sticky top-0 z-40 w-full border-b border-solid border-[#f0f2f4] dark:border-gray-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md">
     <div className="max-w-[1280px] mx-auto px-4 md:px-10 py-3 flex items-center justify-between whitespace-nowrap">
       <div className="flex items-center gap-3 text-primary">
         <div className="size-8">
@@ -21,7 +21,10 @@ const Navbar: React.FC = () => (
           <a className="text-[#111418] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="#process">프로세스</a>
           <a className="text-[#111418] dark:text-gray-300 text-sm font-medium hover:text-primary transition-colors" href="#contact">문의하기</a>
         </nav>
-        <button className="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary text-white text-sm font-bold transition-all hover:bg-primary/90">
+        <button 
+          onClick={onOpenQuote}
+          className="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary text-white text-sm font-bold transition-all hover:bg-primary/90"
+        >
           <span>프로젝트 시작하기</span>
         </button>
       </div>
@@ -32,13 +35,135 @@ const Navbar: React.FC = () => (
   </header>
 );
 
+const QuoteModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+      setIsSuccess(false);
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsSuccess(true);
+      setTimeout(onClose, 2000);
+    }, 1500);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div 
+        className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button 
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+        >
+          <span className="material-symbols-outlined">close</span>
+        </button>
+
+        <div className="p-8">
+          {isSuccess ? (
+            <div className="py-12 flex flex-col items-center text-center gap-4">
+              <div className="size-16 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center">
+                <span className="material-symbols-outlined text-4xl">check_circle</span>
+              </div>
+              <h2 className="text-2xl font-bold dark:text-white">문의가 접수되었습니다!</h2>
+              <p className="text-gray-500 dark:text-gray-400">담당자가 확인 후 24시간 이내에 연락드리겠습니다.</p>
+            </div>
+          ) : (
+            <>
+              <div className="mb-8">
+                <h2 className="text-2xl font-black dark:text-white mb-2">무료 견적 문의</h2>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">진행하시려는 프로젝트에 대해 알려주세요.</p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">성함 / 업체명</label>
+                    <input required type="text" placeholder="홍길동" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">연락처</label>
+                    <input required type="tel" placeholder="010-1234-5678" className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">프로젝트 유형</label>
+                  <select className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none appearance-none">
+                    <option>웹사이트 제작 (반응형)</option>
+                    <option>모바일 앱 (iOS/Android)</option>
+                    <option>웹 & 앱 동시 제작</option>
+                    <option>UI/UX 디자인만</option>
+                    <option>기타</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">예상 예산</label>
+                  <select className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none appearance-none">
+                    <option>300만원 미만</option>
+                    <option>300만원 ~ 1,000만원</option>
+                    <option>1,000만원 ~ 3,000만원</option>
+                    <option>3,000만원 이상</option>
+                    <option>협의 필요</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">상세 내용</label>
+                  <textarea required rows={4} placeholder="기획 중인 프로젝트에 대해 간략히 설명해주세요." className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none resize-none"></textarea>
+                </div>
+
+                <button 
+                  disabled={isSubmitting}
+                  type="submit" 
+                  className="w-full mt-2 h-14 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                >
+                  {isSubmitting ? (
+                    <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      <span>견적 요청하기</span>
+                      <span className="material-symbols-outlined text-lg">send</span>
+                    </>
+                  )}
+                </button>
+                {/* Added missing closing form tag */}
+              </form>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const App: React.FC = () => {
-  const [data] = useState<LandingPageData>(INITIAL_DATA);
+  // Rely on inference from INITIAL_DATA to avoid potential TS parsing issues with generics in TSX
+  const [data] = useState(INITIAL_DATA);
+  const [isQuoteOpen, setIsQuoteOpen] = useState(false);
   const currentYear = new Date().getFullYear();
 
   return (
     <div className="min-h-screen">
-      <Navbar />
+      <Navbar onOpenQuote={() => setIsQuoteOpen(true)} />
+      <QuoteModal isOpen={isQuoteOpen} onClose={() => setIsQuoteOpen(false)} />
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -57,7 +182,10 @@ const App: React.FC = () => {
                 <a href="#portfolio" className="flex min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-14 px-6 bg-primary text-white text-base font-bold shadow-lg shadow-primary/25 hover:translate-y-[-2px] transition-all">
                   <span>포트폴리오 보기</span>
                 </a>
-                <button className="flex min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-14 px-6 bg-white dark:bg-gray-800 border border-[#e2e8f0] dark:border-gray-700 text-[#111418] dark:text-white text-base font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+                <button 
+                  onClick={() => setIsQuoteOpen(true)}
+                  className="flex min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-14 px-6 bg-white dark:bg-gray-800 border border-[#e2e8f0] dark:border-gray-700 text-[#111418] dark:text-white text-base font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                >
                   <span>무료 견적 받기</span>
                 </button>
               </div>
@@ -160,10 +288,16 @@ const App: React.FC = () => {
               </p>
             </div>
             <div className="relative z-10 flex flex-wrap justify-center gap-4">
-              <button className="bg-white text-primary px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-xl">
+              <button 
+                onClick={() => setIsQuoteOpen(true)}
+                className="bg-white text-primary px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-xl"
+              >
                 프로젝트 시작하기
               </button>
-              <button className="bg-primary/20 border border-white/30 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/10 transition-all">
+              <button 
+                onClick={() => setIsQuoteOpen(true)}
+                className="bg-primary/20 border border-white/30 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/10 transition-all"
+              >
                 전문가와 상담하기
               </button>
             </div>
