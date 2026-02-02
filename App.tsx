@@ -34,6 +34,7 @@ const Navbar: React.FC = () => (
 
 const App: React.FC = () => {
   const [data] = useState<LandingPageData>(INITIAL_DATA);
+  const currentYear = new Date().getFullYear();
 
   return (
     <div className="min-h-screen">
@@ -173,7 +174,7 @@ const App: React.FC = () => {
       {/* Footer */}
       <footer className="bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 py-12">
         <div className="max-w-[1280px] mx-auto px-4 md:px-10">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-4">
             <div className="flex items-center gap-3 text-primary">
               <div className="size-6">
                 <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -188,22 +189,7 @@ const App: React.FC = () => {
               <a className="hover:text-primary transition-colors" href="#">쿠키 정책</a>
             </div>
             <div className="text-[#617589] dark:text-gray-400 text-sm">
-              © 2024 데브에이전시. All rights reserved.
-            </div>
-          </div>
-          
-          <div className="pt-8 border-t border-slate-50 dark:border-slate-900 flex flex-col items-center gap-3">
-            <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 dark:text-slate-700">
-              <span className="w-12 h-px bg-slate-100 dark:bg-slate-800"></span>
-              <span>Credits</span>
-              <span className="w-12 h-px bg-slate-100 dark:bg-slate-800"></span>
-            </div>
-            <div className="flex items-center gap-2 group cursor-default">
-              <span className="text-xs font-medium text-slate-400 dark:text-slate-500">이 웹 사이트 제작자</span>
-              <div className="relative px-3 py-1 bg-slate-50 dark:bg-slate-900 rounded-full border border-slate-100 dark:border-slate-800 overflow-hidden group-hover:border-primary/30 transition-colors">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <span className="relative text-sm font-black text-slate-600 dark:text-slate-300 group-hover:text-primary transition-colors">손재영</span>
-              </div>
+              © {currentYear} 손재영. All rights reserved.
             </div>
           </div>
         </div>
